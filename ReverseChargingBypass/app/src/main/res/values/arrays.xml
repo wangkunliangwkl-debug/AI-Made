@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+        ColorOS 上反向充电相关的进程大致分布：
+          android            : 系统框架，BatteryService / WirelessCharging 状态机
+          com.android.settings: 设置里的「无线反向充电」开关与提示
+          com.oplus.battery  : OPlus 自家电池管理
+          com.oplus.athena   : OPlus 后台策略/省电策略
+          com.oplus.safecenter: 手机管家
+        全部勾选可以让 hook 覆盖面最大化。
+    -->
+    <string-array name="xposed_scope">
+        <item>android</item>
+        <item>com.android.settings</item>
+        <item>com.oplus.battery</item>
+        <item>com.oplus.athena</item>
+        <item>com.oplus.safecenter</item>
+        <item>com.oplus.wirelesssettings</item>
+    </string-array>
+</resources>
