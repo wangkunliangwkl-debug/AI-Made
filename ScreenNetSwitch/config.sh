@@ -1,43 +1,53 @@
 #!/system/bin/sh
 # ============================================
-#                用户配置中心
-#  改完需要重启模块生效（重启手机，或执行 action.sh 里的 reload）
+#                用户配置中心  v1.1
+#  改完重启手机生效，或执行 action.sh reload
 # ============================================
 
 # ---- 屏幕检测轮询间隔（秒）----
-# 越小响应越快，但耗电略增。2 秒是个不错的平衡点。
 POLL_INTERVAL=2
 
 # ---- 亮屏后延迟多久再开 5G（秒）----
-# 需求是 1 秒。如果发现亮屏瞬间切 5G 有异常，可以调到 2~3。
 SCREEN_ON_DELAY=1
 
 # ---- 防抖动：两次切换之间最小间隔（秒）----
-# 防止你反复亮灭屏导致基带疯狂重注册。默认 30 秒。
-MIN_SWITCH_INTERVAL=30
+MIN_SWITCH_INTERVAL=20
 
-# ---- 网络模式数值（AOSP RILConstants.java 权威值）----
-# 9  = NR/LTE/GSM/WCDMA            → 开启 5G（联通/电信用户常用）
-# 32 = NR/LTE/TDSCMA/GSM/WCDMA    → 开启 5G（移动用户常用）
-# 11 = LTE Only                    → 纯 4G，禁用 5G
-# 26 = NR/LTE/GSM/WCDMA            → 开启 5G（联通/电信）
-#
-# ⚠️ 你用移动卡的话，5G 请填 32；联通/电信填 9 或 26。
-#    如果不确定，先填 9 试试，不行改 32。
+# ---- 网络模式数值（AOSP RILConstants.java）----
+# 9  = NR/LTE/GSM/WCDMA        -> 开 5G（联通/电信）
+# 32 = NR/LTE/TDSCMA/GSM/WCDMA -> 开 5G（移动）
+# 11 = LTE Only                -> 纯 4G，禁 5G
+# 26 = NR/LTE/GSM/WCDMA        -> 开 5G（联通/电信备选）
 MODE_5G=9
 MODE_4G=11
 
-# ---- 是否每次切换都写日志 ----
+# ---- 是否写日志 ----
 LOG_ENABLE=true
 
-# ---- 是否弹 Toast 提示 ----
+# ---- 日志目录（下载目录，普通文件管理器可直接看）----
+LOG_DIR=/sdcard/Download/ScreenNetSwitch
+
+# ---- 单个日志文件上限（行数），超了自动截断 ----
+LOG_MAX_LINES=4000
+
+# ---- 是否弹提示 ----
 TOAST_ENABLE=true
 
-# ---- 亮屏弹窗文案 ----
+# ---- 提示方式 ----
+#   notification = 系统通知栏（稳定，推荐）
+#   toast        = 悬浮吐司（需 dex 编译，多数机型会失败）
+TOAST_MODE=notification
+
+# ---- 亮屏提示文案 ----
 TOAST_TEXT_5G="已切换到5G网络"
-# 熄屏要不要也弹？通常不需要（屏幕都黑了看不见），默认关。
+# ---- 熄屏提示文案（屏幕黑了看不见，默认空 = 不弹）----
 TOAST_TEXT_4G=""
 
-# ---- 是否同时关闭/开启移动数据？（一般不需要）----
-# 有些机型光改 PNM 不生效，需要配合 svc data 重连。默认关。
-RECONNECT_DATA=false
+# ---- 切换后是否重连数据（部分机型必须，否则不生效）----
+RECONNECT_DATA=true
+
+# ---- 切换后等待多少秒再读实际网络类型做验证 ----
+VERIFY_DELAY=6
+
+# ---- 是否强制校验：切完发现没生效就再重试一次 ----
+RETRY_ON_FAIL=true
