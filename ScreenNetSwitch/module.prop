@@ -1,0 +1,6 @@
+id=screen_net_switch
+name=熄屏切4G / 亮屏切5G
+version=v1.0
+versionCode=1
+author=Operit
+description=熄屏时关闭5G(锁定LTE)，亮屏1秒后恢复5G并弹Toast提示。针对vivo/iQOO OriginOS通过preferred_network_mode实现。
